@@ -4,7 +4,7 @@ const api = axios.create({
   baseURL: "https://nishu-bhai-ecommerce.onrender.com/api",
 });
 
-/* Attach token automatically */
+/* Attach user token */
 api.interceptors.request.use((config) => {
   const user = localStorage.getItem("user");
   if (user) {

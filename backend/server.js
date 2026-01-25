@@ -15,63 +15,46 @@ import {
   verifyRazorpayPayment,
 } from "./razorpay.js";
 
-/* ================== CONFIG ================== */
+/* ================= CONFIG ================= */
 dotenv.config();
 connectDB();
 
 const app = express();
 
-/* ================== CORS (FINAL FIX) ================== */
-const allowedOrigins = [
-  "http://localhost:5173", // frontend local
-  "http://localhost:5174", // admin local
-  "https://nishu-bhai-ecommerce.vercel.app", // frontend live
-  "https://nishu-bhai-admin.vercel.app", // admin live (change if different)
-];
-
+/* ================= CORS (TEMPORARY OPEN – FIX ISSUE) ================= */
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Allow requests without origin (Postman, server-to-server)
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        return callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-/* Preflight requests */
+/* Allow preflight requests */
 app.options("*", cors());
 
-/* ================== MIDDLEWARES ================== */
+/* ================= MIDDLEWARE ================= */
 app.use(express.json());
 
-/* ================== ROUTES ================== */
+/* ================= ROUTES ================= */
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/categories", categoryRoutes);
 
-/* ================== RAZORPAY ROUTES (SAFE) ================== */
+/* ================= RAZORPAY ROUTES ================= */
 if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
   app.post("/api/payment/create-order", createRazorpayOrder);
   app.post("/api/payment/verify", verifyRazorpayPayment);
 }
 
-/* ================== ROOT ================== */
+/* ================= ROOT ================= */
 app.get("/", (req, res) => {
   res.send("E-Commerce API Running 🚀");
 });
 
-/* ================== ERROR HANDLER ================== */
+/* ================= ERROR HANDLER ================= */
 app.use((err, req, res, next) => {
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   res.status(statusCode).json({
@@ -79,7 +62,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-/* ================== START SERVER ================== */
+/* ================= START SERVER ================= */
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
