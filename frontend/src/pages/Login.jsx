@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import api from "../services/api";
+import axios from "axios";
 import { saveUser } from "../utils/auth";
 
 function Login() {
@@ -17,10 +17,20 @@ function Login() {
     setError("");
 
     try {
-      const { data } = await api.post("/auth/login", {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        "https://nishu-bhai-ecommerce.onrender.com/api/auth/login",
+        {
+          email,
+          password,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = response.data;
 
       // save user + token + role
       saveUser(data);
@@ -33,7 +43,8 @@ function Login() {
       }
     } catch (err) {
       setError(
-        err.response?.data?.message || "Invalid email or password"
+        err.response?.data?.message ||
+          "Invalid email or password"
       );
     } finally {
       setLoading(false);
@@ -60,7 +71,7 @@ function Login() {
             value={email}
             required
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full border px-3 py-2 rounded"
           />
 
           <input
@@ -69,13 +80,13 @@ function Login() {
             value={password}
             required
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full border px-3 py-2 rounded"
           />
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition"
+            className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
