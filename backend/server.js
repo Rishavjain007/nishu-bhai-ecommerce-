@@ -220,6 +220,59 @@
 
 
 
+// import express from "express";
+// import dotenv from "dotenv";
+// import cors from "cors";
+
+// import connectDB from "./config/db.js";
+
+// import authRoutes from "./routes/authRoutes.js";
+// import productRoutes from "./routes/productRoutes.js";
+// import cartRoutes from "./routes/cartRoutes.js";
+// import orderRoutes from "./routes/orderRoutes.js";
+// import categoryRoutes from "./routes/categoryRoutes.js";
+
+// dotenv.config();
+// connectDB();
+
+// const app = express();
+
+// /* ===== CORS (PRODUCTION SAFE) ===== */
+// app.use(
+//   cors({
+//     origin: [
+//       "http://localhost:5173", // frontend local
+//       "http://localhost:5174", // admin local
+//       "https://nishu-bhai-ecommerce.vercel.app", // frontend live
+//       "https://nishu-bhai-admin.vercel.app",     // admin live (future)
+//     ],
+//     credentials: true,
+//   })
+// );
+
+// app.use(express.json());
+
+// /* Routes */
+// app.use("/api/auth", authRoutes);
+// app.use("/api/products", productRoutes);
+// app.use("/api/cart", cartRoutes);
+// app.use("/api/orders", orderRoutes);
+// app.use("/api/categories", categoryRoutes);
+
+// /* Root */
+// app.get("/", (req, res) => {
+//   res.send("E-Commerce API Running 🚀");
+// });
+
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, reflect => {
+//   console.log(`Server running on port ${PORT}`);
+// });
+
+
+
+
+
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -237,18 +290,21 @@ connectDB();
 
 const app = express();
 
-/* ===== CORS (PRODUCTION SAFE) ===== */
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173", // frontend local
-      "http://localhost:5174", // admin local
-      "https://nishu-bhai-ecommerce.vercel.app", // frontend live
-      "https://nishu-bhai-admin.vercel.app",     // admin live (future)
-    ],
-    credentials: true,
-  })
-);
+/* ===== CORS CONFIG (FINAL & SAFE) ===== */
+const corsOptions = {
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "https://nishu-bhai-ecommerce.vercel.app",
+    "https://nishu-bhai-admin.vercel.app",
+  ],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // 🔥 VERY IMPORTANT
 
 app.use(express.json());
 
@@ -265,6 +321,6 @@ app.get("/", (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, reflect => {
+app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
