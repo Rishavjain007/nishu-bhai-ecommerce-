@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import api from "../services/api";
+import axios from "axios";
 import { saveUser } from "../utils/auth";
 
 function Register() {
@@ -25,16 +25,26 @@ function Register() {
     setLoading(true);
 
     try {
-      const { data } = await api.post("/auth/register", form);
+      const response = await axios.post(
+        "https://nishu-bhai-ecommerce.onrender.com/api/auth/register",
+        form,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = response.data;
 
       // save user + token
       saveUser(data);
 
-      // normal users go home
       navigate("/");
     } catch (err) {
       setError(
-        err.response?.data?.message || "Registration failed"
+        err.response?.data?.message ||
+          "Registration failed. Try again."
       );
     } finally {
       setLoading(false);
@@ -62,7 +72,7 @@ function Register() {
             value={form.name}
             onChange={handleChange}
             required
-            className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full border px-3 py-2 rounded"
           />
 
           <input
@@ -72,7 +82,7 @@ function Register() {
             value={form.email}
             onChange={handleChange}
             required
-            className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full border px-3 py-2 rounded"
           />
 
           <input
@@ -82,13 +92,13 @@ function Register() {
             value={form.password}
             onChange={handleChange}
             required
-            className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full border px-3 py-2 rounded"
           />
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition"
+            className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
           >
             {loading ? "Creating Account..." : "Register"}
           </button>
@@ -96,10 +106,7 @@ function Register() {
 
         <p className="text-sm text-center mt-4">
           Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-indigo-600 font-medium hover:underline"
-          >
+          <Link to="/login" className="text-indigo-600 font-medium">
             Login
           </Link>
         </p>
