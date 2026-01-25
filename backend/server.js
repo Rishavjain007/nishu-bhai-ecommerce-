@@ -1,72 +1,72 @@
-// import express from "express";
-// import dotenv from "dotenv";
-// import cors from "cors";
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
 
-// import connectDB from "./config/db.js";
+import connectDB from "./config/db.js";
 
-// import authRoutes from "./routes/authRoutes.js";
-// import productRoutes from "./routes/productRoutes.js";
-// import cartRoutes from "./routes/cartRoutes.js";
-// import orderRoutes from "./routes/orderRoutes.js";
-// import categoryRoutes from "./routes/categoryRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import cartRoutes from "./routes/cartRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
 
-// import {
-//   createRazorpayOrder,
-//   verifyRazorpayPayment,
-// } from "./razorpay.js";
+import {
+  createRazorpayOrder,
+  verifyRazorpayPayment,
+} from "./razorpay.js";
 
-// dotenv.config();
-// connectDB();
+dotenv.config();
+connectDB();
 
-// const app = express();
+const app = express();
 
-// /* ===== CORS CONFIG (PRODUCTION SAFE) ===== */
-// app.use(
-//   cors({
-//     origin: [
-//       "http://localhost:5173", // frontend local
-//       "http://localhost:5174", // admin local
-//       process.env.FRONTEND_URL, // netlify frontend
-//       process.env.ADMIN_URL,    // netlify admin
-//     ],
-//     credentials: true,
-//   })
-// );
+/* ===== CORS CONFIG (PRODUCTION SAFE) ===== */
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173", // frontend local
+      "http://localhost:5174", // admin local
+      process.env.FRONTEND_URL, // netlify frontend
+      process.env.ADMIN_URL,    // netlify admin
+    ],
+    credentials: true,
+  })
+);
 
-// /* Middlewares */
-// app.use(express.json());
+/* Middlewares */
+app.use(express.json());
 
-// /* Routes */
-// app.use("/api/auth", authRoutes);
-// app.use("/api/products", productRoutes);
-// app.use("/api/cart", cartRoutes);
-// app.use("/api/orders", orderRoutes);
-// app.use("/api/categories", categoryRoutes);
+/* Routes */
+app.use("/api/auth", authRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/categories", categoryRoutes);
 
-// /* Razorpay Routes (SAFE) */
-// if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
-//   app.post("/api/payment/create-order", createRazorpayOrder);
-//   app.post("/api/payment/verify", verifyRazorpayPayment);
-// }
+/* Razorpay Routes (SAFE) */
+if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+  app.post("/api/payment/create-order", createRazorpayOrder);
+  app.post("/api/payment/verify", verifyRazorpayPayment);
+}
 
-// /* Root Route */
-// app.get("/", (req, res) => {
-//   res.send("E-Commerce API Running 🚀");
-// });
+/* Root Route */
+app.get("/", (req, res) => {
+  res.send("E-Commerce API Running 🚀");
+});
 
-// /* Error Handling */
-// app.use((err, req, res, next) => {
-//   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-//   res.status(statusCode).json({
-//     message: err.message,
-//   });
-// });
+/* Error Handling */
+app.use((err, req, res, next) => {
+  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  res.status(statusCode).json({
+    message: err.message,
+  });
+});
 
-// /* Start Server */
-// const PORT = process.env.PORT || 5000;
-// app.listen(PORT, () => {
-//   console.log(`Server running on port ${PORT}`);
-// });
+/* Start Server */
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
 
 
@@ -333,42 +333,42 @@
 
 
 
-import express from "express";
-import dotenv from "dotenv";
-import cors from "cors";
-import mongoose from "mongoose";
+// import express from "express";
+// import dotenv from "dotenv";
+// import cors from "cors";
+// import mongoose from "mongoose";
 
-import authRoutes from "./routes/authRoutes.js";
+// import authRoutes from "./routes/authRoutes.js";
 
-dotenv.config();
+// dotenv.config();
 
-const app = express();
+// const app = express();
 
-/* ===== MIDDLEWARE ===== */
-app.use(express.json());
+// /* ===== MIDDLEWARE ===== */
+// app.use(express.json());
 
-app.use(
-  cors({
-    origin: "*", // ✅ SIMPLE & WORKING (later restrict kar sakte ho)
-  })
-);
+// app.use(
+//   cors({
+//     origin: "*", // ✅ SIMPLE & WORKING (later restrict kar sakte ho)
+//   })
+// );
 
-/* ===== DATABASE ===== */
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.error(err));
+// /* ===== DATABASE ===== */
+// mongoose
+//   .connect(process.env.MONGO_URI)
+//   .then(() => console.log("MongoDB Connected"))
+//   .catch((err) => console.error(err));
 
-/* ===== ROUTES ===== */
-app.use("/api/auth", authRoutes);
+// /* ===== ROUTES ===== */
+// app.use("/api/auth", authRoutes);
 
-/* ===== TEST ROUTE ===== */
-app.get("/", (req, res) => {
-  res.send("API Running 🚀");
-});
+// /* ===== TEST ROUTE ===== */
+// app.get("/", (req, res) => {
+//   res.send("API Running 🚀");
+// });
 
-/* ===== SERVER ===== */
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// /* ===== SERVER ===== */
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
