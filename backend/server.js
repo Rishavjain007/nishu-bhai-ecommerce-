@@ -74,40 +74,99 @@
 // app.listen(PORT, () => {
 //   console.log(`Server running on port ${PORT}`);
 // });
+
+
+
+
+
+
+// import express from "express";
+// import dotenv from "dotenv";
+
+// dotenv.config();
+
+// const app = express();
+
+// /* FORCE CORS — NO DEPENDENCY */
+// app.use((req, res, next) => {
+//   res.setHeader("Access-Control-Allow-Origin", "*");
+//   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+//   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+//   if (req.method === "OPTIONS") {
+//     return res.sendStatus(200);
+//   }
+//   next();
+// });
+
+// app.use(express.json());
+
+// app.get("/api/products", (req, res) => {
+//   res.json([{ test: "CORS WORKING" }]);
+// });
+
+// app.post("/api/auth/register", (req, res) => {
+//   res.json({ success: true });
+// });
+
+// app.get("/", (req, res) => {
+//   res.send("API OK");
+// });
+
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => {
+//   console.log("Server running on port", PORT);
+// });
+
+
+
+
+
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
+
+import connectDB from "./config/db.js";
+
+import authRoutes from "./routes/authRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import cartRoutes from "./routes/cartRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
 
 dotenv.config();
+connectDB();
 
 const app = express();
 
-/* FORCE CORS — NO DEPENDENCY */
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-  next();
-});
+/* ===== CORS (PRODUCTION SAFE) ===== */
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173", // frontend local
+      "http://localhost:5174", // admin local
+      "https://nishu-bhai-ecommerce.vercel.app", // frontend live
+      "https://nishu-bhai-admin.vercel.app",     // admin live (future)
+    ],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
-app.get("/api/products", (req, res) => {
-  res.json([{ test: "CORS WORKING" }]);
-});
+/* Routes */
+app.use("/api/auth", authRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/categories", categoryRoutes);
 
-app.post("/api/auth/register", (req, res) => {
-  res.json({ success: true });
-});
-
+/* Root */
 app.get("/", (req, res) => {
-  res.send("API OK");
+  res.send("E-Commerce API Running 🚀");
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log("Server running on port", PORT);
+app.listen(PORT, reflect => {
+  console.log(`Server running on port ${PORT}`);
 });
