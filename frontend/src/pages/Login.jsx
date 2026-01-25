@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import api from "../services/api";
 import { saveUser } from "../utils/auth";
 
@@ -22,10 +22,15 @@ function Login() {
         password,
       });
 
-      // save user + token
+      // save user + token + role
       saveUser(data);
 
-      navigate("/");
+      // role based redirect
+      if (data.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       setError(
         err.response?.data?.message || "Invalid email or password"
@@ -36,44 +41,56 @@ function Login() {
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "50px auto" }}>
-      <h2>Login</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
+        <h2 className="text-2xl font-bold text-center text-indigo-600 mb-4">
+          Login
+        </h2>
 
-      {error && (
-        <p style={{ color: "red", marginBottom: "10px" }}>{error}</p>
-      )}
+        {error && (
+          <p className="text-red-500 text-sm mb-3 text-center">
+            {error}
+          </p>
+        )}
 
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "10px" }}>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="email"
             placeholder="Email"
             value={email}
             required
             onChange={(e) => setEmail(e.target.value)}
-            style={{ width: "100%", padding: "8px" }}
+            className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
-        </div>
 
-        <div style={{ marginBottom: "10px" }}>
           <input
             type="password"
             placeholder="Password"
             value={password}
             required
             onChange={(e) => setPassword(e.target.value)}
-            style={{ width: "100%", padding: "8px" }}
+            className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
-        </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={{ width: "100%", padding: "10px" }}
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
-      </form>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition"
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+
+        <p className="text-sm text-center mt-4">
+          Don&apos;t have an account?{" "}
+          <Link
+            to="/register"
+            className="text-indigo-600 font-medium hover:underline"
+          >
+            Register
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

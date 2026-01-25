@@ -30,6 +30,7 @@ function Register() {
       // save user + token
       saveUser(data);
 
+      // normal users go home
       navigate("/");
     } catch (err) {
       setError(
