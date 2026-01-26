@@ -520,6 +520,103 @@
 
 
 
+// import express from "express";
+// import dotenv from "dotenv";
+// import mongoose from "mongoose";
+// import cors from "cors";
+
+// import authRoutes from "./routes/authRoutes.js";
+// import productRoutes from "./routes/productRoutes.js";
+// import categoryRoutes from "./routes/categoryRoutes.js";
+
+// dotenv.config();
+
+// const app = express();
+
+// /* ===============================
+//    ✅ CORRECT CORS CONFIG
+// ================================ */
+// const allowedOrigins = [
+//   "http://localhost:5173",
+//   "http://localhost:5174",
+//   "https://nishu-bhai-ecommerce.vercel.app",
+//   "https://nishu-bhai-ecommerce-admin.vercel.app",
+// ];
+
+// app.use(
+//   cors({
+//     origin: function (origin, callback) {
+//       // allow requests with no origin (Postman, mobile apps)
+//       if (!origin) return callback(null, true);
+
+//       if (allowedOrigins.includes(origin)) {
+//         callback(null, true);
+//       } else {
+//         callback(new Error("Not allowed by CORS"));
+//       }
+//     },
+//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//   })
+// );
+
+// /* 🔥 VERY IMPORTANT FOR PREFLIGHT */
+// app.options("*", cors());
+
+// /* ===============================
+//    BODY PARSER
+// ================================ */
+// app.use(express.json());
+
+// /* ===============================
+//    DATABASE
+// ================================ */
+// mongoose
+//   .connect(process.env.MONGO_URI)
+//   .then(() => console.log("MongoDB Connected"))
+//   .catch((err) => console.error(err));
+
+// /* ===============================
+//    ROUTES
+// ================================ */
+// app.use("/api/auth", authRoutes);
+// app.use("/api/products", productRoutes);
+// app.use("/api/categories", categoryRoutes);
+
+// /* ===============================
+//    ROOT
+// ================================ */
+// app.get("/", (req, res) => {
+//   res.send("API Running 🚀");
+// });
+
+// /* ===============================
+//    SERVER
+// ================================ */
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
@@ -534,7 +631,8 @@ dotenv.config();
 const app = express();
 
 /* ===============================
-   ✅ CORRECT CORS CONFIG
+   ✅ CORS: allow specific origins,
+   echo origin, and support credentials
 ================================ */
 const allowedOrigins = [
   "http://localhost:5173",
@@ -543,25 +641,48 @@ const allowedOrigins = [
   "https://nishu-bhai-ecommerce-admin.vercel.app",
 ];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // allow requests with no origin (Postman, mobile apps)
-      if (!origin) return callback(null, true);
+const corsOptions = {
+  origin: (origin, callback) => {
+    // allow non-browser requests (Postman, mobile apps) that have no origin
+    if (!origin) return callback(null, true);
 
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true, // if frontend sends cookies / credentials
+};
 
-/* 🔥 VERY IMPORTANT FOR PREFLIGHT */
-app.options("*", cors());
+app.use(cors(corsOptions));
+// VERY IMPORTANT: respond to preflight requests using the SAME corsOptions
+app.options("*", cors(corsOptions));
+
+/* Fallback safety middleware: ensure headers are always present (helps with proxies/short-circuits) */
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+  }
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+  );
+
+  if (req.method === "OPTIONS") {
+    console.log("Handled preflight OPTIONS for", req.originalUrl, "from", origin);
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 /* ===============================
    BODY PARSER
