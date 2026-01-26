@@ -444,9 +444,86 @@
 
 
 
+// import express from "express";
+// import dotenv from "dotenv";
+// import mongoose from "mongoose";
+
+// import authRoutes from "./routes/authRoutes.js";
+// import productRoutes from "./routes/productRoutes.js";
+// import categoryRoutes from "./routes/categoryRoutes.js";
+
+// dotenv.config();
+
+// const app = express();
+
+// /* ===============================
+//    🔥 GLOBAL CORS (ABSOLUTE FIX)
+// ================================ */
+// app.use((req, res, next) => {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+//   );
+//   res.header(
+//     "Access-Control-Allow-Methods",
+//     "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+//   );
+
+//   // VERY IMPORTANT: Preflight request
+//   if (req.method === "OPTIONS") {
+//     return res.sendStatus(200);
+//   }
+
+//   next();
+// });
+
+// /* ===== BODY PARSER ===== */
+// app.use(express.json());
+
+// /* ===== DATABASE ===== */
+// mongoose
+//   .connect(process.env.MONGO_URI)
+//   .then(() => console.log("MongoDB Connected"))
+//   .catch((err) => console.error(err));
+
+// /* ===== ROUTES ===== */
+// app.use("/api/auth", authRoutes);
+// app.use("/api/products", productRoutes);
+// app.use("/api/categories", categoryRoutes);
+
+// /* ===== ROOT ===== */
+// app.get("/", (req, res) => {
+//   res.send("API Running 🚀");
+// });
+
+// /* ===== SERVER ===== */
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import cors from "cors";
 
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
@@ -457,47 +534,65 @@ dotenv.config();
 const app = express();
 
 /* ===============================
-   🔥 GLOBAL CORS (ABSOLUTE FIX)
+   ✅ CORRECT CORS CONFIG
 ================================ */
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  res.header(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, PATCH, DELETE, OPTIONS"
-  );
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://nishu-bhai-ecommerce.vercel.app",
+  "https://nishu-bhai-ecommerce-admin.vercel.app",
+];
 
-  // VERY IMPORTANT: Preflight request
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // allow requests with no origin (Postman, mobile apps)
+      if (!origin) return callback(null, true);
 
-  next();
-});
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-/* ===== BODY PARSER ===== */
+/* 🔥 VERY IMPORTANT FOR PREFLIGHT */
+app.options("*", cors());
+
+/* ===============================
+   BODY PARSER
+================================ */
 app.use(express.json());
 
-/* ===== DATABASE ===== */
+/* ===============================
+   DATABASE
+================================ */
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.error(err));
 
-/* ===== ROUTES ===== */
+/* ===============================
+   ROUTES
+================================ */
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 
-/* ===== ROOT ===== */
+/* ===============================
+   ROOT
+================================ */
 app.get("/", (req, res) => {
   res.send("API Running 🚀");
 });
 
-/* ===== SERVER ===== */
+/* ===============================
+   SERVER
+================================ */
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
