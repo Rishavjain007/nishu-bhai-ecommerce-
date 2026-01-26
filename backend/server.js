@@ -380,6 +380,70 @@
 
 
 
+// import express from "express";
+// import dotenv from "dotenv";
+// import mongoose from "mongoose";
+
+// import authRoutes from "./routes/authRoutes.js";
+// import productRoutes from "./routes/productRoutes.js";
+// import categoryRoutes from "./routes/categoryRoutes.js";
+
+// dotenv.config();
+
+// const app = express();
+
+// /* ===== BODY PARSER ===== */
+// app.use(express.json());
+
+// /* ===== 🔥 CORS FIX (VERCEL + ADMIN + USER) ===== */
+// app.use((req, res, next) => {
+//   res.setHeader("Access-Control-Allow-Origin", "*");
+//   res.setHeader(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+//   );
+//   res.setHeader(
+//     "Access-Control-Allow-Methods",
+//     "GET, POST, PUT, DELETE, OPTIONS"
+//   );
+
+//   // IMPORTANT: preflight request
+//   if (req.method === "OPTIONS") {
+//     return res.sendStatus(200);
+//   }
+
+//   next();
+// });
+
+// /* ===== DATABASE ===== */
+// mongoose
+//   .connect(process.env.MONGO_URI)
+//   .then(() => console.log("MongoDB Connected"))
+//   .catch((err) => console.error(err));
+
+// /* ===== ROUTES ===== */
+// app.use("/api/auth", authRoutes);
+// app.use("/api/products", productRoutes);
+// app.use("/api/categories", categoryRoutes);
+
+// /* ===== ROOT ===== */
+// app.get("/", (req, res) => {
+//   res.send("API Running 🚀");
+// });
+
+// /* ===== SERVER ===== */
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
+
+
+
+
+
+
+
+
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
@@ -392,28 +456,30 @@ dotenv.config();
 
 const app = express();
 
-/* ===== BODY PARSER ===== */
-app.use(express.json());
-
-/* ===== 🔥 CORS FIX (VERCEL + ADMIN + USER) ===== */
+/* ===============================
+   🔥 GLOBAL CORS (ABSOLUTE FIX)
+================================ */
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
   );
-  res.setHeader(
+  res.header(
     "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
+    "GET, POST, PUT, PATCH, DELETE, OPTIONS"
   );
 
-  // IMPORTANT: preflight request
+  // VERY IMPORTANT: Preflight request
   if (req.method === "OPTIONS") {
     return res.sendStatus(200);
   }
 
   next();
 });
+
+/* ===== BODY PARSER ===== */
+app.use(express.json());
 
 /* ===== DATABASE ===== */
 mongoose
