@@ -23,21 +23,24 @@ function ProductCard({ product }) {
   };
 
   return (
-    <div
-      style={{
-        border: "1px solid #ddd",
-        padding: "10px",
-        borderRadius: "5px",
-      }}
-    >
+    <div className="border rounded-lg shadow-sm hover:shadow-md transition bg-white">
       <img
         src={product.image}
         alt={product.name}
-        style={{ width: "100%", height: "150px", objectFit: "cover" }}
+        className="w-full h-48 object-cover rounded-t-lg"
       />
-      <h3>{product.name}</h3>
-      <p>₹{product.price}</p>
-      <button onClick={addToCart}>Add to Cart</button>
+
+      <div className="p-4">
+        <h3 className="font-semibold text-lg">{product.name}</h3>
+        <p className="text-gray-600 mb-2">₹{product.price}</p>
+
+        <button
+          onClick={addToCart}
+          className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
+        >
+          Add to Cart
+        </button>
+      </div>
     </div>
   );
 }

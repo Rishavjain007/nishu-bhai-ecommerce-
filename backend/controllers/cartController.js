@@ -1,7 +1,7 @@
 import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
 
-/* 🛒 Get User Cart */
+/* 🛒 Get Cart */
 export const getCart = async (req, res) => {
   try {
     let cart = await Cart.findOne({ user: req.user._id }).populate(
@@ -19,14 +19,14 @@ export const getCart = async (req, res) => {
   }
 };
 
-/* ➕ Add to Cart */
+/* ➕ Add To Cart */
 export const addToCart = async (req, res) => {
   try {
     const { productId, quantity } = req.body;
 
     const product = await Product.findById(productId);
-    if (!product || !product.isActive) {
-      return res.status(404).json({ message: "Product not available" });
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
     }
 
     let cart = await Cart.findOne({ user: req.user._id });
@@ -34,12 +34,12 @@ export const addToCart = async (req, res) => {
       cart = await Cart.create({ user: req.user._id, items: [] });
     }
 
-    const itemIndex = cart.items.findIndex(
+    const index = cart.items.findIndex(
       (item) => item.product.toString() === productId
     );
 
-    if (itemIndex > -1) {
-      cart.items[itemIndex].quantity += quantity;
+    if (index > -1) {
+      cart.items[index].quantity += quantity;
     } else {
       cart.items.push({
         product: productId,
@@ -57,7 +57,7 @@ export const addToCart = async (req, res) => {
   }
 };
 
-/* 🔄 Update quantity */
+/* 🔄 Update Cart */
 export const updateCartItem = async (req, res) => {
   try {
     const { productId, quantity } = req.body;
@@ -80,7 +80,7 @@ export const updateCartItem = async (req, res) => {
   }
 };
 
-/* ❌ Remove item */
+/* ❌ Remove Item */
 export const removeCartItem = async (req, res) => {
   try {
     const { productId } = req.body;
