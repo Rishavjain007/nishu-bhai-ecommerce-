@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../services/api";
+import axios from "axios";
 import { isLoggedIn } from "../utils/auth";
 
 function Checkout() {
@@ -28,15 +28,28 @@ function Checkout() {
   const placeOrder = async () => {
     setLoading(true);
     try {
-      await api.post("/orders", {
-        shippingAddress: form,
-        paymentMethod: "COD",
-      });
+      const user = JSON.parse(localStorage.getItem("user"));
+      const token = user?.token;
 
-      alert("Order placed successfully");
+      await axios.post(
+        "https://nishu-bhai-ecommerce.onrender.com/api/orders",
+        {
+          shippingAddress: form,
+          paymentMethod: "COD",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      alert("Order placed successfully ✅");
       navigate("/");
     } catch (error) {
-      alert("Failed to place order");
+      console.error("ORDER ERROR:", error.response || error);
+      alert("Failed to place order ❌");
     } finally {
       setLoading(false);
     }

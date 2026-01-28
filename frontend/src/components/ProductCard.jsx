@@ -1,6 +1,6 @@
-import api from "../services/api";
-import { isLoggedIn } from "../utils/auth";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { isLoggedIn } from "../utils/auth";
 
 function ProductCard({ product }) {
   const navigate = useNavigate();
@@ -12,35 +12,40 @@ function ProductCard({ product }) {
     }
 
     try {
-      await api.post("/cart/add", {
-        productId: product._id,
-        quantity: 1,
-      });
-      alert("Added to cart");
+      // 🔐 token direct localStorage se
+      const user = JSON.parse(localStorage.getItem("user"));
+      const token = user?.token;
+
+      console.log("POSTING TO BACKEND DIRECTLY");
+
+      await axios.post(
+        "https://nishu-bhai-ecommerce.onrender.com/api/cart/add",
+        {
+          productId: product._id,
+          quantity: 1,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      alert("Added to cart ✅");
     } catch (error) {
-      alert("Failed to add to cart");
+      console.error("ADD TO CART ERROR:", error.response || error);
+      alert("Failed to add to cart ❌");
     }
   };
 
   return (
-    <div className="border rounded-lg shadow-sm hover:shadow-md transition bg-white">
-      <img
-        src={product.image}
-        alt={product.name}
-        className="w-full h-48 object-cover rounded-t-lg"
-      />
+    <div>
+      <img src={product.image} alt={product.name} />
+      <h3>{product.name}</h3>
+      <p>₹{product.price}</p>
 
-      <div className="p-4">
-        <h3 className="font-semibold text-lg">{product.name}</h3>
-        <p className="text-gray-600 mb-2">₹{product.price}</p>
-
-        <button
-          onClick={addToCart}
-          className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
-        >
-          Add to Cart
-        </button>
-      </div>
+      <button onClick={addToCart} className="bg-blue-500 px-5 py-2 rounded text-[#fff]">Add to Cart</button>
     </div>
   );
 }

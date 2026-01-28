@@ -736,6 +736,8 @@ import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js"; // ✅ IMPORTANT
+import orderRoutes from "./routes/orderRoutes.js";
+
 
 dotenv.config();
 
@@ -785,6 +787,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/cart", cartRoutes); // ✅ FIXED
+app.use("/api/orders", orderRoutes); // ✅ MUST
+
 
 /* ===============================
    ROOT
