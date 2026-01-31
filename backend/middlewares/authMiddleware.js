@@ -31,9 +31,10 @@ export const protect = async (req, res, next) => {
 
 /* 👑 Admin access only */
 export const admin = (req, res, next) => {
-  if (req.user && req.user.isAdmin === true) {
+  if (req.user && req.user.role === "admin") {
     next();
   } else {
     return res.status(403).json({ message: "Admin access denied" });
   }
 };
+
