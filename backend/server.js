@@ -726,7 +726,6 @@
 
 
 
-
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
@@ -735,28 +734,24 @@ import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
-import cartRoutes from "./routes/cartRoutes.js"; // ✅ IMPORTANT
+import cartRoutes from "./routes/cartRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
-
 
 dotenv.config();
 
 const app = express();
 
 /* ===============================
-   ✅ CORS CONFIG (PRODUCTION SAFE)
+   ✅ CORS CONFIG (VERCEL + LOCAL)
 ================================ */
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:5174",
-  "https://nishu-bhai-ecommerce.vercel.app",
-  "https://nishu-bhai-ecommerce-admin.vercel.app",
-];
-
 const corsOptions = {
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
+
+    if (
+      origin.includes("localhost") ||
+      origin.includes("vercel.app")
+    ) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
@@ -786,9 +781,8 @@ mongoose
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
-app.use("/api/cart", cartRoutes); // ✅ FIXED
-app.use("/api/orders", orderRoutes); // ✅ MUST
-
+app.use("/api/cart", cartRoutes);
+app.use("/api/orders", orderRoutes);
 
 /* ===============================
    ROOT
