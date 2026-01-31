@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-/* 🔐 Protect private routes */
+/* 🔐 Protect routes */
 export const protect = async (req, res, next) => {
   let token;
 
@@ -29,7 +29,7 @@ export const protect = async (req, res, next) => {
   }
 };
 
-/* 👑 Admin access only */
+/* 👑 Admin only (ROLE BASED) */
 export const admin = (req, res, next) => {
   if (req.user && req.user.role === "admin") {
     next();
@@ -37,4 +37,3 @@ export const admin = (req, res, next) => {
     return res.status(403).json({ message: "Admin access denied" });
   }
 };
-

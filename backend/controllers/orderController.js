@@ -1,9 +1,7 @@
 import Order from "../models/Order.js";
 import Cart from "../models/Cart.js";
 
-/* ===============================
-   📦 Place Order (USER)
-================================ */
+/* 📦 Place Order */
 export const placeOrder = async (req, res) => {
   try {
     const { shippingAddress, paymentMethod } = req.body;
@@ -33,7 +31,6 @@ export const placeOrder = async (req, res) => {
       paymentStatus: paymentMethod === "COD" ? "PENDING" : "PAID",
     });
 
-    // Clear cart
     cart.items = [];
     cart.totalAmount = 0;
     await cart.save();
@@ -44,24 +41,19 @@ export const placeOrder = async (req, res) => {
   }
 };
 
-/* ===============================
-   📜 Get Logged-in User Orders
-================================ */
+/* 📜 User Orders */
 export const getMyOrders = async (req, res) => {
   try {
     const orders = await Order.find({ user: req.user._id }).sort({
       createdAt: -1,
     });
-
     res.json(orders);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-/* ===============================
-   👑 Admin: Get All Orders
-================================ */
+/* 👑 Admin: All Orders */
 export const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find()
@@ -74,9 +66,7 @@ export const getAllOrders = async (req, res) => {
   }
 };
 
-/* ===============================
-   🔄 Admin: Update Order Status
-================================ */
+/* 🔄 Admin: Update Order Status */
 export const updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
