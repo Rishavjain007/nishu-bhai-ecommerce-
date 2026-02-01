@@ -10,7 +10,7 @@ function Orders() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const user = JSON.parse(localStorage.getItem("user"));
+        const user = JSON.parse(localStorage.getItem("admin"));
 
         if (!user || user.role !== "admin") {
           setError("Admin access denied");
